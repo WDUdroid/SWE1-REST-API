@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace REST_API.API
@@ -61,8 +62,17 @@ namespace REST_API.API
 
             BodyExists = bodyDataFilter[0] == "Content-Length";
 
-            HttpBody = BodyExists == true ? dataSnippets[contentLengthPos+2] : "";
+            int posAddOn = 2;
 
+            HttpBody = BodyExists == true ? dataSnippets[contentLengthPos+posAddOn] : "";
+
+            while (HttpBody.Length != Int32.Parse(bodyDataFilter[1]))
+            {
+                posAddOn = posAddOn + 1;
+                HttpBody += "\r\n";
+                HttpBody += dataSnippets[contentLengthPos + posAddOn];
+            }
+            
             RequestFulfill();
         }
 

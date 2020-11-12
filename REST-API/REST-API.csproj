@@ -6,4 +6,8 @@
     <RootNamespace>REST_API</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.15.1" />
+  </ItemGroup>
+
 </Project>

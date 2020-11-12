@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Security;
+using System.Net.Sockets;
 
-namespace REST_API
+namespace REST_API.API
 {
-    public class TcpHandler : ITcpListener
+    public class TcpHandler : ITcpHandler
     {
         private readonly System.Net.Sockets.TcpListener _server;
         private System.Net.Sockets.TcpClient _client;
@@ -15,6 +14,25 @@ namespace REST_API
         public TcpHandler()
         {
             _server = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 8000);
+        }
+
+        public TcpHandler(TcpClient client, IPAddress domain)
+        {
+            try
+            {
+                if (client != null && domain != null)
+                {
+                    _server = new System.Net.Sockets.TcpListener(domain, 8000);
+                    _server.Start();
+                    _client = client;
+                    _client.Connect(domain, 8000);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public void AcceptTcpClient()
@@ -39,7 +57,7 @@ namespace REST_API
 
         public void Start()
         {
-            _server.Start();
+            _server.Start(5);
         }
         public Stream GetStream() => _client.GetStream();
         public void Close()

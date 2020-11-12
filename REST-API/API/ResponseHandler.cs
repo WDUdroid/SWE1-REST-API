@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Security;
-using System.Text;
-using REST_API.API;
 
-namespace REST_API
+namespace REST_API.API
 {
     class ResponseHandler
     {
