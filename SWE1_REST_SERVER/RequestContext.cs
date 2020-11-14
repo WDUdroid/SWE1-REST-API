@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SWE1_REST_SERVER
 {
-    class RequestContext
+    class RequestContext : IRequestContext
     {
         private bool BodyExists;
         private Dictionary<string, string> headerKeyValue;
@@ -14,9 +14,10 @@ namespace SWE1_REST_SERVER
         public string HttpVersion { get; set; }
         public string HttpRequest { get; set; }
         public string RequestMethod { get; set; }
-        public string Payload;
-        public int MessageID;
-        public string StatusCode;
+        public string StatusCode { get; set; }
+        public string Payload { get; set; }
+        public int MessageID { get; set; }
+
         private List<string> messagesData = new List<string>();
 
         public RequestContext(string receivedData, List<string> messagesData)

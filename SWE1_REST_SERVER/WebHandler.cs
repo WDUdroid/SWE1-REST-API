@@ -10,7 +10,7 @@ namespace SWE1_REST_SERVER
     {
         private readonly ITcpHandler _tcpHandler;
 
-        private RequestContext _requestContext;
+        private IRequestContext _requestContext;
 
         public WebHandler(ITcpHandler tcpHandler)
         {
@@ -23,6 +23,14 @@ namespace SWE1_REST_SERVER
 
             Console.WriteLine(">>Servicing client");
             Console.WriteLine("...");
+        }
+
+        public WebHandler(ITcpHandler tcpHandler, IRequestContext requestContext)
+        {
+            _tcpHandler = tcpHandler;
+            _tcpHandler.AcceptTcpClient();
+
+            _requestContext = requestContext;
         }
 
         public string GetHttpContent()
