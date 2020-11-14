@@ -12,6 +12,7 @@ namespace SWE1_REST_SERVER
 
         private IRequestContext _requestContext;
 
+        // used while normal operation
         public WebHandler(ITcpHandler tcpHandler)
         {
             Console.WriteLine();
@@ -20,6 +21,7 @@ namespace SWE1_REST_SERVER
             _tcpHandler.AcceptTcpClient();
         }
 
+        // for testing purposes
         public WebHandler(ITcpHandler tcpHandler, IRequestContext requestContext)
         {
             _tcpHandler = tcpHandler;
@@ -28,6 +30,10 @@ namespace SWE1_REST_SERVER
             _requestContext = requestContext;
         }
 
+        // reads message sent by client
+        // Streamreader did not work, which made testing a little harder
+        // Instead of getting .DataAvailable() from the StreamReader-Object,
+        // I had to check, if the TcpClient has available data.
         public string GetHttpContent()
         {
             var stream = _tcpHandler.GetStream();

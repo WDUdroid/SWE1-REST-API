@@ -15,6 +15,7 @@ namespace Rest_Server_Tests
         {
         }
 
+        // Tests if Server can receive short messages
         [Test]
         public void GetHttpContentShortMessageTest()
         {
@@ -50,6 +51,7 @@ namespace Rest_Server_Tests
             Assert.AreEqual("abc", actualValue);
         }
 
+        // Tests if Server can receive long messages
         [Test]
         public void GetHttpContentLongMessageTest()
         {
@@ -98,6 +100,7 @@ namespace Rest_Server_Tests
             Assert.AreEqual(message, actualValue);
         }
 
+        // Tests if Server does not crash, when specified characters are read (others had this problem)
         [Test]
         public void GetHttpContentSpecialCharacterMessageTest()
         {
@@ -133,6 +136,7 @@ namespace Rest_Server_Tests
             Assert.AreEqual("????????????",actualValue);
         }
 
+        // Tests if Server can send messages
         [Test]
         public void SendHttpContentTest()
         {
@@ -174,6 +178,7 @@ Content-Length: 21
             Assert.AreEqual(expectedValue, actualValue);
         }
 
+        // Tests if RequestContext Constructor splits message accordingly
         [Test]
         public void RequestContextTest()
         {
@@ -199,6 +204,24 @@ zweite";
             Assert.AreEqual("HTTP/1.1", actualHttpVersionValue);
         }
 
+        // Test if Server can handle non-HttpRequest messages
+        [Test]
+        public void RequestContextEmptyTest()
+        {
+            var dataList = new List<String>();
+            string receivedData = "";
+            RequestContext processData = new RequestContext(receivedData, dataList);
+
+            string actualHttpRequestValue = processData.HttpRequest;
+            string actualHttpBodyValue = processData.HttpBody;
+            string actualHttpVersionValue = processData.HttpVersion;
+
+            Assert.AreEqual(null, actualHttpRequestValue);
+            Assert.AreEqual(null, actualHttpBodyValue);
+            Assert.AreEqual(null, actualHttpVersionValue);
+        }
+
+        // Tests if a message can be created
         [Test]
         public void OneNewMessageTest()
         {
@@ -208,7 +231,8 @@ zweite";
 
             Assert.AreEqual("Hallo", dataList[0]);
         }
-        
+
+        // Tests if two message can be created
         [Test]
         public void TwoNewMessageTest()
         {
@@ -221,6 +245,7 @@ zweite";
             Assert.AreEqual("Bye", dataList[1]);
         }
 
+        // Tests if Server can cope with non-existing messages
         [Test]
         public void UpdateNonExistingMessageTest()
         {
@@ -233,6 +258,7 @@ zweite";
             Assert.AreEqual(-1, processData.MessageID);
         }
 
+        // Tests if Server can update messages
         [Test]
         public void UpdateExistingMessageTest()
         {
@@ -251,6 +277,7 @@ zweite";
             Assert.AreEqual(-1, processData.MessageID);
         }
 
+        // Tests if Server can return messages to client
         [Test]
         public void ListMessagesTest()
         {
@@ -268,6 +295,7 @@ zweite";
             Assert.AreEqual("1: Hallo\r\n2: Bye\r\n", processData.Payload);
         }
 
+        // Tests if Server can cope with request for not existing message
         [Test]
         public void ListNonExistingSingleMessageTest()
         {
@@ -280,6 +308,7 @@ zweite";
             Assert.AreEqual("", processData.Payload);
         }
 
+        // Tests if Server can return single messages
         [Test]
         public void ListSingleMessageTest()
         {
@@ -298,6 +327,7 @@ zweite";
             Assert.AreEqual("Hallo", processData.Payload);
         }
 
+        // Tests if Server can cope with remove request for not existing message
         [Test]
         public void RemoveNonExistingMessageTest()
         {
@@ -310,6 +340,7 @@ zweite";
             Assert.AreEqual("", processData.Payload);
         }
 
+        // Tests if Server can remove messages
         [Test]
         public void RemoveMessageTest()
         {

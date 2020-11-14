@@ -15,6 +15,7 @@ namespace SWE1_REST_SERVER
 
         public TcpHandler()
         {
+            // Connect server
             _server = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 8000);
             _server.Start(5);
         }

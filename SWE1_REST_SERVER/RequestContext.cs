@@ -20,55 +20,73 @@ namespace SWE1_REST_SERVER
 
         private List<string> messagesData = new List<string>();
 
+        // for testing purposes
         public RequestContext(List<string> messagesData)
         {
             this.messagesData = messagesData;
         }
 
+        // runs in normal operation
         public RequestContext(string receivedData, List<string> messagesData)
         {
-            this.messagesData = messagesData;
-            string[] dataSnippets = receivedData.Split("\r\n");
-
-            string[] headerDataFilter = dataSnippets[0].Split(" ");
-
-            RequestMethod = headerDataFilter[0];
-            HttpRequest = headerDataFilter[1];
-            HttpVersion = headerDataFilter[2];
-
-            int contentLengthPos = 0;
-
-            headerKeyValue = new Dictionary<string, string>();
-
-            for (int i = 0; i < dataSnippets.Length; i++)
+            // if receivedData does not resemble a HttpRequest an exception is thrown.
+            try
             {
-                string[] tmpKeyValue = dataSnippets[i].Split(": ");
-                if (tmpKeyValue.Length > 1)
+                this.messagesData = messagesData;
+                string[] dataSnippets = receivedData.Split("\r\n");
+
+                string[] headerDataFilter = dataSnippets[0].Split(" ");
+
+                // Splitting header data and saving it
+                RequestMethod = headerDataFilter[0];
+                HttpRequest = headerDataFilter[1];
+                HttpVersion = headerDataFilter[2];
+
+                int contentLengthPos = 0;
+
+                headerKeyValue = new Dictionary<string, string>();
+
+                // Copies HttpRequest-content into key-value-pairs
+                // and looks for "Content-Length"-Key, saving its index in contentLengthPos (Position)
+                for (int i = 0; i < dataSnippets.Length; i++)
                 {
-                    headerKeyValue.Add(tmpKeyValue[0], tmpKeyValue[1]);
-                    contentLengthPos = tmpKeyValue[0] == "Content-Length" ? i : 0;
+                    string[] tmpKeyValue = dataSnippets[i].Split(": ");
+                    if (tmpKeyValue.Length > 1)
+                    {
+                        headerKeyValue.Add(tmpKeyValue[0], tmpKeyValue[1]);
+                        contentLengthPos = tmpKeyValue[0] == "Content-Length" ? i : 0;
+                    }
+                }
+
+                string[] bodyDataFilter = dataSnippets[contentLengthPos].Split(": ");
+
+                // Checks if HttpBody exists
+                BodyExists = bodyDataFilter[0] == "Content-Length";
+
+                // Sets up reading position for Body
+                int posAddOn = 2;
+
+                HttpBody = BodyExists == true ? dataSnippets[contentLengthPos + posAddOn] : "";
+
+                if (BodyExists)
+                {
+                    // If body has multiple lines, concat' them to HttpBody
+                    while (HttpBody.Length != Int32.Parse(bodyDataFilter[1]))
+                    {
+                        posAddOn = posAddOn + 1;
+                        HttpBody += "\r\n";
+                        HttpBody += dataSnippets[contentLengthPos + posAddOn];
+                    }
                 }
             }
 
-            string[] bodyDataFilter = dataSnippets[contentLengthPos].Split(": ");
-
-            BodyExists = bodyDataFilter[0] == "Content-Length";
-
-            int posAddOn = 2;
-
-            HttpBody = BodyExists == true ? dataSnippets[contentLengthPos + posAddOn] : "";
-
-            if (BodyExists)
+            catch (Exception e)
             {
-                while (HttpBody.Length != Int32.Parse(bodyDataFilter[1]))
-                {
-                    posAddOn = posAddOn + 1;
-                    HttpBody += "\r\n";
-                    HttpBody += dataSnippets[contentLengthPos + posAddOn];
-                }
+                Console.WriteLine(e);
             }
         }
 
+        // Checks which function is appropriate for specific HttpRequest
         public void RequestFulfill()
         {
             string[] httpRequestSnippets = HttpRequest.Split("/");
@@ -157,17 +175,21 @@ namespace SWE1_REST_SERVER
         //////////////////////////////////////////////////////////////
         // Message Area
         // This area creates individual responses
+
+        // Creates new message
         public void NewMessage(string message)
         {
             Console.WriteLine(">>Sent request checks out");
 
-            StatusCode = "200 OK";
+            StatusCode = "201 Created";
             messagesData.Add(message);
             MessageID = messagesData.Count;
             Payload = message;
 
-            Console.WriteLine(">>Responding with 200 OK");
+            Console.WriteLine(">>Responding with 201 Created");
         }
+
+        // Overwrites message with specific ID
         public void UpdateMessage(int id, string message)
         {
             if (id > messagesData.Count)
@@ -193,6 +215,7 @@ namespace SWE1_REST_SERVER
             }
         }
 
+        // Returns all messages
         public void ListMessages()
         {
             Console.WriteLine(">>Sent request checks out");
@@ -211,6 +234,7 @@ namespace SWE1_REST_SERVER
             Console.WriteLine(">>Responding with 200 OK");
         }
 
+        // Filters for specific ID and returns it with message
         public void ListSingleMessage(int id)
         {
             if (id > messagesData.Count)
@@ -235,6 +259,7 @@ namespace SWE1_REST_SERVER
             }
         }
 
+        // Overwrites message with empty string
         public void RemoveMessage(int id)
         {
             if (id > messagesData.Count)
