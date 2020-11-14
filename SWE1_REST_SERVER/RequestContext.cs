@@ -1,0 +1,254 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+
+namespace SWE1_REST_SERVER
+{
+    class RequestContext
+    {
+        private bool BodyExists;
+        private Dictionary<string, string> headerKeyValue;
+
+        public string HttpBody { get; set; }
+        public string HttpVersion { get; set; }
+        public string HttpRequest { get; set; }
+        public string RequestMethod { get; set; }
+        public string Payload;
+        public int MessageID;
+        public string StatusCode;
+        private List<string> messagesData = new List<string>();
+
+        public RequestContext(string receivedData, List<string> messagesData)
+        {
+            this.messagesData = messagesData;
+            string[] dataSnippets = receivedData.Split("\r\n");
+
+            string[] headerDataFilter = dataSnippets[0].Split(" ");
+
+            RequestMethod = headerDataFilter[0];
+            HttpRequest = headerDataFilter[1];
+            HttpVersion = headerDataFilter[2];
+
+            int contentLengthPos = 0;
+
+            headerKeyValue = new Dictionary<string, string>();
+
+            for (int i = 0; i < dataSnippets.Length; i++)
+            {
+                string[] tmpKeyValue = dataSnippets[i].Split(": ");
+                if (tmpKeyValue.Length > 1)
+                {
+                    headerKeyValue.Add(tmpKeyValue[0], tmpKeyValue[1]);
+                    contentLengthPos = tmpKeyValue[0] == "Content-Length" ? i : 0;
+                }
+            }
+
+            string[] bodyDataFilter = dataSnippets[contentLengthPos].Split(": ");
+
+            BodyExists = bodyDataFilter[0] == "Content-Length";
+
+            int posAddOn = 2;
+
+            HttpBody = BodyExists == true ? dataSnippets[contentLengthPos + posAddOn] : "";
+
+            while (HttpBody.Length != Int32.Parse(bodyDataFilter[1]))
+            {
+                posAddOn = posAddOn + 1;
+                HttpBody += "\r\n";
+                HttpBody += dataSnippets[contentLengthPos + posAddOn];
+            }
+        }
+
+        public void RequestFulfill()
+        {
+            string[] httpRequestSnippets = HttpRequest.Split("/");
+
+            if (RequestMethod == "GET" && httpRequestSnippets[1] == "messages")
+            {
+                Console.WriteLine("Detected GET-Request\n");
+
+                if (httpRequestSnippets.Length == 2)
+                {
+                    ListMessages();
+                }
+                else if (httpRequestSnippets.Length == 3)
+                {
+                    try
+                    {
+                        ListSingleMessage(int.Parse(httpRequestSnippets[2]));
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("!!!!!!!! ERROR !!!!!!!!");
+                        Console.WriteLine(e);
+                        Console.WriteLine("!!!!!! ERROR END !!!!!!\n");
+
+                        BadRequest();
+                    };
+                }
+            }
+
+            else if (RequestMethod == "POST" && httpRequestSnippets[1] == "messages")
+            {
+                Console.WriteLine("\nDetected POST-Request");
+                NewMessage(HttpBody);
+            }
+
+            else if (RequestMethod == "PUT" && httpRequestSnippets[1] == "messages")
+            {
+                Console.WriteLine("\nDetected PUT-Request");
+                try
+                {
+                    UpdateMessage(int.Parse(httpRequestSnippets[2]), HttpBody);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("!!!!!!!! ERROR !!!!!!!!");
+                    Console.WriteLine(e);
+                    Console.WriteLine("!!!!!! ERROR END !!!!!!\n");
+
+                    BadRequest();
+                };
+            }
+
+            else if (RequestMethod == "DELETE" && httpRequestSnippets[1] == "messages")
+            {
+                Console.WriteLine("\nDetected DELETE-Request");
+                try
+                {
+                    RemoveMessage(int.Parse(httpRequestSnippets[2]));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("!!!!!!!! ERROR !!!!!!!!");
+                    Console.WriteLine(e);
+                    Console.WriteLine("!!!!!! ERROR END !!!!!!\n");
+
+                    BadRequest();
+                };
+            }
+
+            else
+            {
+                BadRequest();
+            }
+
+        }
+
+        private void BadRequest()
+        {
+            StatusCode = "400 Bad Request";
+            MessageID = -1;
+            Payload = "";
+            Console.WriteLine(">>Responding with 400 Bad Request");
+        }
+        
+        
+        //////////////////////////////////////////////////////////////
+        // Message Area
+        // This area creates individual responses
+        public void NewMessage(string message)
+        {
+            Console.WriteLine(">>Sent request checks out");
+
+            StatusCode = "200 OK";
+            messagesData.Add(message);
+            MessageID = messagesData.Count;
+            Payload = message;
+
+            Console.WriteLine(">>Responding with 200 OK");
+        }
+        public void UpdateMessage(int id, string message)
+        {
+            if (id > messagesData.Count)
+            {
+                Console.WriteLine(">>Sent MessageID out of Range");
+
+                StatusCode = "412 Precondition Failed";
+                MessageID = -1;
+                Payload = "";
+
+                Console.WriteLine(">>Responding with 412 Precondition Failed");
+            }
+            else
+            {
+                Console.WriteLine(">>Sent request checks out");
+
+                StatusCode = "200 OK";
+                messagesData[id - 1] = message;
+                MessageID = -1;
+                Payload = message;
+
+                Console.WriteLine(">>Responding with 200 OK");
+            }
+        }
+
+        public void ListMessages()
+        {
+            Console.WriteLine(">>Sent request checks out");
+
+            StatusCode = "200 OK";
+            Payload = "";
+            for (int i = 0; i < messagesData.Count; i++)
+            {
+                Payload += i + 1;
+                Payload += ": " + messagesData[i];
+                Payload += "\r\n";
+            }
+
+            MessageID = -1;
+
+            Console.WriteLine(">>Responding with 200 OK");
+        }
+
+        public void ListSingleMessage(int id)
+        {
+            if (id > messagesData.Count)
+            {
+                Console.WriteLine(">>Sent request asking for non existent entry");
+
+                StatusCode = "404 Not Found";
+                MessageID = -1;
+                Payload = "";
+
+                Console.WriteLine(">>Responding with 404 Not Found");
+            }
+            else
+            {
+                Console.WriteLine(">>Sent request checks out");
+
+                StatusCode = "200 OK";
+                MessageID = -1;
+                Payload = messagesData[id - 1];
+
+                Console.WriteLine(">>Responding with 200 OK");
+            }
+        }
+
+        public void RemoveMessage(int id)
+        {
+            if (id > messagesData.Count)
+            {
+                Console.WriteLine(">>Sent request asking for non existent entry");
+
+                StatusCode = "404 Not Found";
+                MessageID = -1;
+                Payload = "";
+
+                Console.WriteLine(">>Responding with 404 Not Found");
+            }
+            else
+            {
+                Console.WriteLine(">>Sent request checks out");
+
+                StatusCode = "200 OK";
+                MessageID = -1;
+                Payload = "";
+                messagesData[id - 1] = "";
+
+                Console.WriteLine(">>Responding with 200 OK");
+            }
+        }
+    }
+}
