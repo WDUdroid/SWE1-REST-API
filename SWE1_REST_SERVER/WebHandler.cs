@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace SWE1_REST_SERVER
 {
-    class WebHandler : IWebHandler
+    public class WebHandler : IWebHandler
     {
         private readonly ITcpHandler _tcpHandler;
 
@@ -30,7 +30,7 @@ namespace SWE1_REST_SERVER
             var stream = _tcpHandler.GetStream();
             var receivedData = "";
 
-            while (stream.DataAvailable)
+            while (_tcpHandler.DataAvailable() != 0)
             {
                 Byte[] bytes = new Byte[4096];
                 int i = stream.Read(bytes, 0, bytes.Length);

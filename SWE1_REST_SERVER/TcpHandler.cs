@@ -25,10 +25,12 @@ namespace SWE1_REST_SERVER
             _client = _server.AcceptTcpClient();
         }
 
-        public NetworkStream GetStream() => _client.GetStream();
+        public Stream GetStream() => _client.GetStream();
         public void CloseClient() => _client.Close();
 
         public void Stop() => _server.Stop();
+
+        public int DataAvailable() => _client.Available;
 
         public void Dispose()
         {

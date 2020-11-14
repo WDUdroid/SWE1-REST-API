@@ -4,9 +4,10 @@ using System.Net.Sockets;
 
 namespace SWE1_REST_SERVER
 {
-    internal interface ITcpHandler : IDisposable
+    public interface ITcpHandler : IDisposable
     {
-        NetworkStream GetStream();
+        Stream GetStream();
         void AcceptTcpClient();
+        int DataAvailable();
     }
 }
