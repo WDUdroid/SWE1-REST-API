@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SWE1_REST_SERVER
 {
-    class RequestContext : IRequestContext
+    public class RequestContext : IRequestContext
     {
         private bool BodyExists;
         private Dictionary<string, string> headerKeyValue;
@@ -19,6 +19,11 @@ namespace SWE1_REST_SERVER
         public int MessageID { get; set; }
 
         private List<string> messagesData = new List<string>();
+
+        public RequestContext(List<string> messagesData)
+        {
+            this.messagesData = messagesData;
+        }
 
         public RequestContext(string receivedData, List<string> messagesData)
         {
@@ -53,11 +58,14 @@ namespace SWE1_REST_SERVER
 
             HttpBody = BodyExists == true ? dataSnippets[contentLengthPos + posAddOn] : "";
 
-            while (HttpBody.Length != Int32.Parse(bodyDataFilter[1]))
+            if (BodyExists)
             {
-                posAddOn = posAddOn + 1;
-                HttpBody += "\r\n";
-                HttpBody += dataSnippets[contentLengthPos + posAddOn];
+                while (HttpBody.Length != Int32.Parse(bodyDataFilter[1]))
+                {
+                    posAddOn = posAddOn + 1;
+                    HttpBody += "\r\n";
+                    HttpBody += dataSnippets[contentLengthPos + posAddOn];
+                }
             }
         }
 
@@ -73,7 +81,7 @@ namespace SWE1_REST_SERVER
                 {
                     ListMessages();
                 }
-                else if (httpRequestSnippets.Length == 3)
+                else if (httpRequestSnippets.Length >= 3)
                 {
                     try
                     {

@@ -16,13 +16,18 @@ namespace SWE1_REST_SERVER
         public TcpHandler()
         {
             _server = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 8000);
-            Console.WriteLine(_server.ToString());
             _server.Start(5);
         }
 
         public void AcceptTcpClient()
         {
+            Console.WriteLine(">>>>>>>>>>Waiting for a client<<<<<<<<<<");
+            Console.WriteLine("...");
+
             _client = _server.AcceptTcpClient();
+
+            Console.WriteLine(">>Servicing client");
+            Console.WriteLine("...");
         }
 
         public Stream GetStream() => _client.GetStream();

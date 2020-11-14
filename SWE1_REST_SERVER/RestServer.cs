@@ -15,12 +15,21 @@ namespace SWE1_REST_SERVER
 
         static Task Main(string[] args)
         {
+            Console.WriteLine("__________STARTING REST-SERVER__________");
+
             TcpHandler tcpHandler = null;
             var tasks = new List<Task>();
 
             try
             {
                 tcpHandler = new TcpHandler();
+
+                Console.WriteLine(">>REST-Server startup successful");
+                Console.WriteLine("...");
+                Console.WriteLine("________________________________________");
+                Console.WriteLine();
+                Console.WriteLine("____SWITCHING TO CLIENT SERVICE AREA____");
+
                 while (true)
                 {
                     concurrentConnections.Wait();
@@ -45,12 +54,17 @@ namespace SWE1_REST_SERVER
         {
             WebHandler webHandler = new WebHandler(tcpHandler);
             var content = webHandler.GetHttpContent();
+
+            Console.WriteLine("\n\n----------RECEIVED HTTP-REQUEST----------");
             Console.WriteLine(content);
+            Console.WriteLine("--------RECEIVED HTTP-REQUEST END--------\n");
+
             webHandler.WorkHttpRequest(content, messagesData);
             webHandler.SendHttpContent();
             tcpHandler.CloseClient();
 
             concurrentConnections.Release();
+            Console.WriteLine(">>Client finished\n\n\n\n\n");
         }
     }
 }

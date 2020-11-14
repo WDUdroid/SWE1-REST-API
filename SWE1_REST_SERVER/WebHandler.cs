@@ -15,14 +15,9 @@ namespace SWE1_REST_SERVER
         public WebHandler(ITcpHandler tcpHandler)
         {
             Console.WriteLine();
-            Console.WriteLine(">>>>>>>>>>Waiting for a client<<<<<<<<<<");
-            Console.WriteLine("...");
 
             _tcpHandler = tcpHandler;
             _tcpHandler.AcceptTcpClient();
-
-            Console.WriteLine(">>Servicing client");
-            Console.WriteLine("...");
         }
 
         public WebHandler(ITcpHandler tcpHandler, IRequestContext requestContext)
