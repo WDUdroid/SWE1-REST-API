@@ -76,7 +76,6 @@ namespace SWE1_REST_SERVER
                 }
             }
 
-            Console.WriteLine(response);
             using StreamWriter writer = new StreamWriter(_tcpHandler.GetStream()) { AutoFlush = true };
             writer.WriteLine(response);
             Console.WriteLine(response);

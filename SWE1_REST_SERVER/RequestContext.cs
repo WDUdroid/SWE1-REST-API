@@ -8,7 +8,7 @@ namespace SWE1_REST_SERVER
     public class RequestContext : IRequestContext
     {
         private bool BodyExists;
-        private Dictionary<string, string> headerKeyValue;
+        private Dictionary<string, string> HeaderKeyValue;
 
         public string HttpBody { get; set; }
         public string HttpVersion { get; set; }
@@ -44,7 +44,7 @@ namespace SWE1_REST_SERVER
 
                 int contentLengthPos = 0;
 
-                headerKeyValue = new Dictionary<string, string>();
+                HeaderKeyValue = new Dictionary<string, string>();
 
                 // Copies HttpRequest-content into key-value-pairs
                 // and looks for "Content-Length"-Key, saving its index in contentLengthPos (Position)
@@ -53,7 +53,7 @@ namespace SWE1_REST_SERVER
                     string[] tmpKeyValue = dataSnippets[i].Split(": ");
                     if (tmpKeyValue.Length > 1)
                     {
-                        headerKeyValue.Add(tmpKeyValue[0], tmpKeyValue[1]);
+                        HeaderKeyValue.Add(tmpKeyValue[0], tmpKeyValue[1]);
                         contentLengthPos = tmpKeyValue[0] == "Content-Length" ? i : 0;
                     }
                 }

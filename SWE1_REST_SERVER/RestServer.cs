@@ -22,7 +22,7 @@ namespace SWE1_REST_SERVER
     {
         // Setting up multiple Clients, for demonstration purposes allow only one thread at a time,
         // which alleviates the need for mutex
-        static readonly SemaphoreSlim concurrentConnections = new SemaphoreSlim(1);
+        static readonly SemaphoreSlim ConcurrentConnections = new SemaphoreSlim(1);
 
         // messageData stores all messages, everything is in-memory, meaning there is no file-handling
         private static List<string> messagesData = new List<string>();
@@ -47,7 +47,7 @@ namespace SWE1_REST_SERVER
 
                 while (true)
                 {
-                    concurrentConnections.Wait();
+                    ConcurrentConnections.Wait();
                     tasks.Add(Task.Run(() => ClientReception(tcpHandler)));
 
                 }
@@ -84,7 +84,7 @@ namespace SWE1_REST_SERVER
 
             tcpHandler.CloseClient();
 
-            concurrentConnections.Release();
+            ConcurrentConnections.Release();
             Console.WriteLine(">>Client finished\n\n\n\n\n");
         }
     }
