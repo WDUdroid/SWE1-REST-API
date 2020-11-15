@@ -77,7 +77,11 @@ namespace SWE1_REST_SERVER
             Console.WriteLine("--------RECEIVED HTTP-REQUEST END--------\n");
 
             webHandler.WorkHttpRequest(content, messagesData);
+
+            Console.WriteLine("\n\n--------------SENT RESPONSE--------------");
             webHandler.SendHttpContent();
+            Console.WriteLine("------------SENT RESPONSE END------------\n");
+
             tcpHandler.CloseClient();
 
             concurrentConnections.Release();

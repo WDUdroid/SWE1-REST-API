@@ -89,21 +89,47 @@ namespace SWE1_REST_SERVER
         // Checks which function is appropriate for specific HttpRequest
         public void RequestFulfill()
         {
-            string[] httpRequestSnippets = HttpRequest.Split("/");
-
-            if (RequestMethod == "GET" && httpRequestSnippets[1] == "messages")
+            if (HttpRequest != null)
             {
-                Console.WriteLine("Detected GET-Request\n");
+                string[] httpRequestSnippets = HttpRequest.Split("/");
 
-                if (httpRequestSnippets.Length == 2)
+                if (RequestMethod == "GET" && httpRequestSnippets[1] == "messages")
                 {
-                    ListMessages();
+                    Console.WriteLine("Detected GET-Request\n");
+
+                    if (httpRequestSnippets.Length == 2)
+                    {
+                        ListMessages();
+                    }
+                    else if (httpRequestSnippets.Length >= 3)
+                    {
+                        try
+                        {
+                            ListSingleMessage(int.Parse(httpRequestSnippets[2]));
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("!!!!!!!! ERROR !!!!!!!!");
+                            Console.WriteLine(e);
+                            Console.WriteLine("!!!!!! ERROR END !!!!!!\n");
+
+                            BadRequest();
+                        }
+                    }
                 }
-                else if (httpRequestSnippets.Length >= 3)
+
+                else if (RequestMethod == "POST" && httpRequestSnippets[1] == "messages")
                 {
+                    Console.WriteLine("\nDetected POST-Request");
+                    NewMessage(HttpBody);
+                }
+
+                else if (RequestMethod == "PUT" && httpRequestSnippets[1] == "messages")
+                {
+                    Console.WriteLine("\nDetected PUT-Request");
                     try
                     {
-                        ListSingleMessage(int.Parse(httpRequestSnippets[2]));
+                        UpdateMessage(int.Parse(httpRequestSnippets[2]), HttpBody);
                     }
                     catch (Exception e)
                     {
@@ -112,50 +138,35 @@ namespace SWE1_REST_SERVER
                         Console.WriteLine("!!!!!! ERROR END !!!!!!\n");
 
                         BadRequest();
-                    };
+                    }
+
+                    ;
                 }
-            }
 
-            else if (RequestMethod == "POST" && httpRequestSnippets[1] == "messages")
-            {
-                Console.WriteLine("\nDetected POST-Request");
-                NewMessage(HttpBody);
-            }
-
-            else if (RequestMethod == "PUT" && httpRequestSnippets[1] == "messages")
-            {
-                Console.WriteLine("\nDetected PUT-Request");
-                try
+                else if (RequestMethod == "DELETE" && httpRequestSnippets[1] == "messages")
                 {
-                    UpdateMessage(int.Parse(httpRequestSnippets[2]), HttpBody);
+                    Console.WriteLine("\nDetected DELETE-Request");
+                    try
+                    {
+                        RemoveMessage(int.Parse(httpRequestSnippets[2]));
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("!!!!!!!! ERROR !!!!!!!!");
+                        Console.WriteLine(e);
+                        Console.WriteLine("!!!!!! ERROR END !!!!!!\n");
+
+                        BadRequest();
+                    }
+
+                    ;
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine("!!!!!!!! ERROR !!!!!!!!");
-                    Console.WriteLine(e);
-                    Console.WriteLine("!!!!!! ERROR END !!!!!!\n");
 
+                else
+                {
                     BadRequest();
-                };
-            }
-
-            else if (RequestMethod == "DELETE" && httpRequestSnippets[1] == "messages")
-            {
-                Console.WriteLine("\nDetected DELETE-Request");
-                try
-                {
-                    RemoveMessage(int.Parse(httpRequestSnippets[2]));
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine("!!!!!!!! ERROR !!!!!!!!");
-                    Console.WriteLine(e);
-                    Console.WriteLine("!!!!!! ERROR END !!!!!!\n");
-
-                    BadRequest();
-                };
             }
-
             else
             {
                 BadRequest();

@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SWE1_REST_SERVER.RestServer">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAQABAAAAAAAAACAAABAAAAAA=</HashCode>
+      <FileName>RestServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SWE1_REST_SERVER.TcpHandler">
+    <Position X="4.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAACAAAEAAQAAAIAAAAAAAACAAYAAAAAAAAAA=</HashCode>
+      <FileName>TcpHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SWE1_REST_SERVER.RequestContext">
+    <Position X="11" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACIQAQAAAAEAgQAAAAACEIAAAEKAAAIESAAAA=</HashCode>
+      <FileName>RequestContext.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SWE1_REST_SERVER.WebHandler">
+    <Position X="7.5" Y="4" Width="1.5" />
+    <AssociationLine Name="_tcpHandler" Type="SWE1_REST_SERVER.ITcpHandler" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="7.5" Y="4.84" />
+        <Point X="7.125" Y="4.84" />
+        <Point X="7.125" Y="11.438" />
+        <Point X="5.75" Y="11.438" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAQBAAAAAAgAAAAEAAACAA=</HashCode>
+      <FileName>WebHandler.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_requestContext" />
+      <Field Name="_tcpHandler" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="SWE1_REST_SERVER.ITcpHandler">
+    <Position X="4.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAAAACAAQAAAAAAAAAA=</HashCode>
+      <FileName>ITcpHandler.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SWE1_REST_SERVER.IWebHandler">
+    <Position X="7.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IWebHandler.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SWE1_REST_SERVER.IRequestContext">
+    <Position X="11" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAQAAAAACAAAAAEIAAAAAAAAAA=</HashCode>
+      <FileName>IRequestContext.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
